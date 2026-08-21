@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String               @id @default(cuid())
+  fullName     String
+  email        String               @unique
+  phone        String?
+  passwordHash String
+  role         Role                 @default(CLIENT)
+  createdAt    DateTime             @default(now())
+  appointments Appointment[]
+  resetTokens  PasswordResetToken[]
+}
+
+model Service {
+  id            String              @id @default(cuid())
+  title         String
+  slug          String              @unique
+  category      String
+  shortDesc     String
+  fullDesc      String              @default("")
+  benefits      String[]            @default([])
+  procedure     String              @default("")
+  recoveryTime  String              @default("")
+  prepInfo      String              @default("")
+  importantNotes String             @default("")
+  durationMins  Int                 @default(60)
+  price         Decimal?            @db.Decimal(10, 2)
+  imageUrl      String              @default("")
+  featured      Boolean             @default(false)
+  displayOrder  Int                 @default(0)
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  appointments  Appointment[]
+  specialists   ServiceSpecialist[]
+}
+
+model Specialist {
+  id                String              @id @default(cuid())
+  name              String
+  title             String              @default("")
+  bio               String              @default("")
+  email             String              @default("")
+  phone             String              @default("")
+  imageUrl          String              @default("")
+  isActive          Boolean             @default(true)
+  appointments      Appointment[]
+  services          ServiceSpecialist[]
+  staffWorkingHours StaffWorkingHours[]
+  blockedSlots      BlockedSlot[]
+}
+
+model ServiceSpecialist {
+  id           String     @id @default(cuid())
+  serviceId    String
+  service      Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  specialistId String
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, specialistId])
+}
+
+model StaffWorkingHours {
+  id           String     @id @default(cuid())
+  specialistId String
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  weekday      Int // 0 = Sunday ... 6 = Saturday
+  isOpen       Boolean    @default(true)
+  openTime     String     @default("09:00")
+  closeTime    String     @default("18:00")
+  breakStart   String?
+  breakEnd     String?
+
+  @@unique([specialistId, weekday])
+}
+
+model BlockedSlot {
+  id           String      @id @default(cuid())
+  date         DateTime    @db.Date
+  startTime    String
+  endTime      String
+  specialistId String? // null = clinic-wide block
+  specialist   Specialist? @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  reason       String      @default("")
+  createdAt    DateTime    @default(now())
+
+  @@index([date, specialistId])
+}
+
+model Appointment {
+  id           String            @id @default(cuid())
+  serviceId    String
+  service      Service           @relation(fields: [serviceId], references: [id])
+  specialistId String?
+  specialist   Specialist?       @relation(fields: [specialistId], references: [id])
+  userId       String?
+  user         User?             @relation(fields: [userId], references: [id])
+
+  fullName     String
+  phone        String
+  email        String
+  notes        String            @default("")
+
+  date         DateTime          @db.Date
+  startTime    String // "09:00" 24h format, stored as string for simple slot matching
+  endTime      String
+
+  status       AppointmentStatus @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([date, status])
+  @@index([specialistId, date, status])
+}
+
+model WorkingHours {
+  id        String  @id @default(cuid())
+  weekday   Int     @unique // 0 = Sunday ... 6 = Saturday
+  isOpen    Boolean @default(true)
+  openTime  String  @default("09:00")
+  closeTime String  @default("18:00")
+  breakStart String?
+  breakEnd   String?
+}
+
+model Holiday {
+  id     String   @id @default(cuid())
+  date   DateTime @db.Date @unique
+  label  String   @default("Holiday")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Int      @default(5)
+  quote     String
+  imageUrl  String    @default("")
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+}
+
+model Offer {
+  id            String    @id @default(cuid())
+  title         String
+  description   String    @default("")
+  category      String    @default("Promotion") // Seasonal | Package | New Client | Promotion
+  imageUrl      String    @default("")
+  originalPrice Decimal?  @db.Decimal(10, 2)
+  promoPrice    Decimal?  @db.Decimal(10, 2)
+  validUntil    DateTime? @db.Date
+  isActive      Boolean   @default(true)
+  displayOrder  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model GalleryImage {
+  id               String   @id @default(cuid())
+  category         String // Clinic | Skin | Hair | Nails | Brows | Lashes | Treatments
+  title            String   @default("")
+  imageUrl         String // single shot; used when isBeforeAfter = false
+  beforeUrl        String   @default("")
+  afterUrl         String   @default("")
+  isBeforeAfter    Boolean  @default(false)
+  consentConfirmed Boolean  @default(false) // admin confirms permission was obtained before publishing a client photo
+  displayOrder     Int      @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String   @default("")
+  subject   String   @default("")
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id              String  @id @default("singleton")
+  slotIntervalMins Int    @default(60)
+  address         String  @default("")
+  phone           String  @default("")
+  whatsapp        String  @default("")
+  email           String  @default("")
+  instagramUrl    String  @default("https://www.instagram.com/glowvie_lounge")
+  facebookUrl     String  @default("")
+  mapEmbedUrl     String  @default("")
+}

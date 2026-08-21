@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: 255 255 255;
+  --color-bg-soft: 248 243 241;
+  --color-surface: 255 255 255;
+  --color-ink: 17 17 17;
+  --color-muted: 102 102 102;
+  --color-line: 236 231 229;
+}
+
+.dark {
+  --color-bg: 24 19 21;
+  --color-bg-soft: 32 25 28;
+  --color-surface: 43 34 38;
+  --color-ink: 240 234 232;
+  --color-muted: 168 156 154;
+  --color-line: 58 47 51;
+}
+
+/* Used by the admin dashboard so it always renders light, regardless of the
+   public site's theme toggle (the toggle's .dark class still lands on <html>,
+   since Navbar/Footer are shared chrome — this re-asserts light values for
+   everything nested inside the admin layout). */
+.force-light {
+  --color-bg: 255 255 255;
+  --color-bg-soft: 248 243 241;
+  --color-surface: 255 255 255;
+  --color-ink: 17 17 17;
+  --color-muted: 102 102 102;
+  --color-line: 236 231 229;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-ink font-body antialiased transition-colors duration-300;
+}
+
+h1, h2, h3, h4 {
+  @apply font-display;
+}
+
+::selection {
+  background: #D9BEBE;
+  color: #111111;
+}
+
+.container-lux {
+  @apply mx-auto w-full max-w-7xl px-6 md:px-10;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3 text-xs font-medium uppercase tracking-[0.15em] text-white shadow-card transition-all duration-300 hover:bg-brand-dark hover:shadow-soft;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand px-7 py-3 text-xs font-medium uppercase tracking-[0.15em] text-ink transition-all duration-300 hover:bg-brand hover:text-white;
+}
+
+.card-lux {
+  @apply rounded-xl3 border border-line bg-surface shadow-soft transition-all duration-300;
+}
+
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.25em] text-brand-dark;
+}
+
+:focus-visible {
+  outline: 2px solid #C29E9E;
+  outline-offset: 3px;
+}
