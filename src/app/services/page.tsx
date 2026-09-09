@@ -1,23 +1,49 @@
 import { prisma } from "@/lib/prisma";
-import { ServiceCard } from "@/components/ServiceCard";
 import { Sparkle } from "@/components/Sparkles";
+import { ServiceCategoryList, type CategoryGroup } from "@/components/ServiceCategoryList";
 
 export const metadata = { title: "Services — Glow Vie Beauty Clinic" };
 export const revalidate = 60;
 
-export default async function ServicesPage({
-  searchParams,
-}: {
-  searchParams: { category?: string };
-}) {
+const CATEGORY_ORDER = ["Facials", "Nails", "Lashes", "Tattoo"];
+const CATEGORY_COPY: Record<string, { tagline: string; description: string }> = {
+  Facials: {
+    tagline: "Glow starts with healthy skin.",
+    description:
+      "Deep-cleansing, hydrating, and restorative facials tailored to your skin's needs — leaving you fresh, calm, and glowing from within.",
+  },
+  Nails: {
+    tagline: "Beauty at your fingertips.",
+    description:
+      "Precision manicures, pedicures, and nail artistry — from clean classics to statement designs, finished with lasting care.",
+  },
+  Lashes: {
+    tagline: "Lift your natural beauty.",
+    description:
+      "Lash lifts, tints, and extensions designed to open up your eyes and simplify your routine — effortless, every morning.",
+  },
+  Tattoo: {
+    tagline: "Art that stays with you.",
+    description:
+      "Semi-permanent makeup and fine-line artistry, applied with a steady hand — so you wake up looking like the best version of you.",
+  },
+};
+
+export default async function ServicesPage() {
   const services = await prisma.service.findMany({
     where: { isActive: true },
     orderBy: { displayOrder: "asc" },
   });
 
-  const categories = Array.from(new Set(services.map((s) => s.category)));
-  const activeCategory = searchParams.category;
-  const filtered = activeCategory ? services.filter((s) => s.category === activeCategory) : services;
+  const categories = CATEGORY_ORDER.filter((c) => services.some((s) => s.category === c));
+  const groups: CategoryGroup[] = categories.map((category) => ({
+    category,
+    tagline: CATEGORY_COPY[category]?.tagline ?? "",
+    description: CATEGORY_COPY[category]?.description ?? "",
+    items: services
+      .filter((s) => s.category === category)
+      .map((s) => ({ ...s, price: s.price ? Number(s.price) : null })),
+  }));
 
   return (
     <>
@@ -31,33 +57,7 @@ export default async function ServicesPage({
 
       <section className="bg-surface py-20">
         <div className="container-lux">
-          <div className="mb-12 flex flex-wrap justify-center gap-3">
-            <a
-              href="/services"
-              className={`rounded-full border px-5 py-2 text-sm transition-colors ${
-                !activeCategory ? "border-brand bg-brand text-white" : "border-line text-muted hover:border-brand"
-              }`}
-            >
-              All
-            </a>
-            {categories.map((c) => (
-              <a
-                key={c}
-                href={`/services?category=${encodeURIComponent(c)}`}
-                className={`rounded-full border px-5 py-2 text-sm transition-colors ${
-                  activeCategory === c ? "border-brand bg-brand text-white" : "border-line text-muted hover:border-brand"
-                }`}
-              >
-                {c}
-              </a>
-            ))}
-          </div>
-
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <ServiceCard key={s.id} service={{ ...s, price: s.price ? Number(s.price) : null }} />
-            ))}
-          </div>
+          <ServiceCategoryList groups={groups} />
         </div>
       </section>
     </>

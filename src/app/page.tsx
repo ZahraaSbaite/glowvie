@@ -157,8 +157,8 @@ export default async function HomePage() {
         <div className="container-lux grid items-center gap-14 lg:grid-cols-2">
           <ScrollReveal className="relative h-[460px] overflow-hidden rounded-xl3 shadow-soft">
             <Image
-              src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1200"
-              alt="Glow Vie treatment lounge"
+              src="/images/clinic.jpg"
+              alt="Glow Vie treatment room"
               fill
               className="object-cover"
             />
