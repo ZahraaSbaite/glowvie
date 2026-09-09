@@ -13,7 +13,7 @@ export async function Footer() {
           <Logo />
           <div className="mt-5 flex gap-3">
             <a
-              href={settings?.instagramUrl || "https://www.instagram.com/glowvie_lounge"}
+              href={settings?.instagramUrl || "https://www.instagram.com/glowvie_lounge?stkn=MWh1MjJlczQwNG5rZQ=="}
               target="_blank"
               rel="noreferrer"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-brand text-brand-dark transition-colors hover:bg-brand hover:text-white"
@@ -46,8 +46,8 @@ export async function Footer() {
           <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-ink">Contact</h4>
           <ul className="space-y-2.5 text-sm text-muted">
             <li className="flex items-start gap-2"><MapPin size={15} className="mt-0.5 shrink-0 text-brand-dark" /> {settings?.address || "Beirut, Lebanon"}</li>
-            <li className="flex items-start gap-2"><Phone size={15} className="mt-0.5 shrink-0 text-brand-dark" /> {settings?.phone || "+961 3 000 000"}</li>
-            <li className="flex items-start gap-2"><Mail size={15} className="mt-0.5 shrink-0 text-brand-dark" /> {settings?.email || "hello@glowvie.com"}</li>
+            <li className="flex items-start gap-2"><Phone size={15} className="mt-0.5 shrink-0 text-brand-dark" /> {settings?.phone || "+961 81 145 280"}</li>
+            <li className="flex items-start gap-2"><Mail size={15} className="mt-0.5 shrink-0 text-brand-dark" /> {settings?.email || "glowviebeauty@gmail.com"}</li>
           </ul>
         </div>
       </div>
