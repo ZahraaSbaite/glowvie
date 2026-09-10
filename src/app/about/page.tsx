@@ -16,7 +16,7 @@ export default function AboutPage() {
         <div className="container-lux grid items-center gap-14 md:grid-cols-2">
           <div className="relative h-[460px] overflow-hidden rounded-xl3">
             <Image
-              src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1200"
+              src="/images/clinic.jpg"
               alt="Glow Vie treatment room"
               fill
               className="object-cover"
