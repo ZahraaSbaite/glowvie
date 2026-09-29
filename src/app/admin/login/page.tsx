@@ -50,9 +50,6 @@ export default function AdminLoginPage() {
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
-          <p className="mt-6 text-center text-xs text-muted">
-            Seeded admin: admin@glowvie.com / GlowVieAdmin123!
-          </p>
         </div>
       </div>
     </section>
