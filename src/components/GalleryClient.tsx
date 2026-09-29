@@ -15,7 +15,7 @@ type GalleryItem = {
   isBeforeAfter: boolean;
 };
 
-const categories = ["All", "Clinic", "Skin", "Hair", "Nails", "Brows", "Lashes", "Treatments"];
+const categories = ["All", "Clinic", "Skin", "Nails", "Brows", "Lashes", "Treatments"];
 
 export function GalleryClient() {
   const [items, setItems] = useState<GalleryItem[]>([]);

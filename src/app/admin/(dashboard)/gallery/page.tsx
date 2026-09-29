@@ -16,7 +16,7 @@ type GalleryItem = {
   displayOrder: number;
 };
 
-const categories = ["Clinic", "Skin", "Hair", "Nails", "Brows", "Lashes", "Treatments"];
+const categories = ["Clinic", "Skin", "Nails", "Brows", "Lashes", "Treatments"];
 
 const emptyForm = {
   category: "Clinic", title: "", imageUrl: "", beforeUrl: "", afterUrl: "",
