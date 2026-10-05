@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Sparkle } from "@/components/Sparkles";
+import { ReviewForm } from "@/components/ReviewForm";
 
 export const metadata = { title: "Testimonials — Glow Vie Beauty Clinic" };
 export const revalidate = 60;
@@ -31,6 +32,19 @@ export default async function TestimonialsPage() {
               <p className="mt-4 text-sm font-medium uppercase tracking-wider text-muted">— {t.name}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="bg-bg-soft py-20">
+        <div className="container-lux">
+          <div className="mx-auto max-w-xl text-center">
+            <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Share Your Experience</span>
+            <h2 className="mt-3 text-4xl text-ink md:text-5xl">Leave a Review</h2>
+            <p className="mx-auto mt-4 max-w-md text-muted">We'd love to hear how your visit went.</p>
+          </div>
+          <div className="mt-12">
+            <ReviewForm />
+          </div>
         </div>
       </section>
     </>
