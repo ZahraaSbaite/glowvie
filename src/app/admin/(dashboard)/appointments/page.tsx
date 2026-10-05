@@ -31,35 +31,19 @@ export default function AdminAppointmentsPage() {
   const [view, setView] = useState<"list" | "calendar">("list");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
-  const [q, setQ] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
-  const [specialistId, setSpecialistId] = useState("");
-  const [specialists, setSpecialists] = useState<{ id: string; name: string }[]>([]);
 
+  // No filters — every appointment, regardless of date or status, always shows here.
   async function load() {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (status) params.set("status", status);
-    if (q) params.set("q", q);
-    if (dateFrom) params.set("dateFrom", dateFrom);
-    if (dateTo) params.set("dateTo", dateTo);
-    if (specialistId) params.set("specialistId", specialistId);
-    const res = await fetch(`/api/appointments?${params.toString()}`);
+    const res = await fetch("/api/appointments");
     const data = await res.json();
     setAppointments(Array.isArray(data) ? data : []);
     setLoading(false);
   }
 
   useEffect(() => {
-    fetch("/api/specialists").then((r) => r.json()).then(setSpecialists);
-  }, []);
-
-  useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, specialistId]);
+  }, []);
 
   async function updateStatus(id: string, newStatus: string) {
     await fetch(`/api/appointments/${id}`, {
@@ -100,31 +84,6 @@ export default function AdminAppointmentsPage() {
         <AdminAppointmentCalendar />
       ) : (
         <>
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && load()}
-          placeholder="Search name, email, phone…"
-          className="rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand"
-        />
-        <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand" />
-        <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand" />
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand">
-          <option value="">All Statuses</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
-        <select value={specialistId} onChange={(e) => setSpecialistId(e.target.value)} className="rounded-full border border-line bg-white px-4 py-2 text-sm outline-none focus:border-brand">
-          <option value="">All Staff</option>
-          {specialists.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-        <button onClick={load} className="btn-outline !py-2 text-xs">Apply Filters</button>
-      </div>
-
       <div className="mt-8 overflow-x-auto rounded-xl3 border border-line bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line bg-bg-soft text-xs uppercase tracking-wider text-muted">
@@ -164,7 +123,7 @@ export default function AdminAppointmentsPage() {
               </tr>
             ))}
             {!loading && appointments.length === 0 && (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-muted">No appointments match these filters.</td></tr>
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-muted">No appointments yet.</td></tr>
             )}
           </tbody>
         </table>

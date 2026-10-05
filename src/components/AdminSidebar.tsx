@@ -12,8 +12,6 @@ import {
   Users,
   Tag,
   Image as ImageIcon,
-  Contact,
-  Mail,
 } from "lucide-react";
 import { classNames } from "@/lib/utils";
 
@@ -25,8 +23,6 @@ const links = [
   { href: "/admin/offers", label: "Offers", icon: Tag },
   { href: "/admin/gallery", label: "Gallery", icon: ImageIcon },
   { href: "/admin/testimonials", label: "Reviews", icon: MessageSquareQuote },
-  { href: "/admin/customers", label: "Customers", icon: Contact },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
