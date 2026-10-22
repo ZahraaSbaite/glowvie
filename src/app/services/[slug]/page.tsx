@@ -45,7 +45,7 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         </div>
       </section>
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux grid gap-14 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <h2 className="text-3xl text-ink">Overview</h2>

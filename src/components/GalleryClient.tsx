@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { classNames } from "@/lib/utils";
-import { Sparkle } from "@/components/Sparkles";
+import { PageHeader } from "@/components/PageHeader";
 
 type GalleryItem = {
   id: string;
@@ -54,13 +54,14 @@ export function GalleryClient() {
 
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Our Work</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">Gallery</h1>
-        <p className="mx-auto mt-4 max-w-lg text-muted">A look inside Glow Vie — our space, and real results from our treatments.</p>
-      </section>
+      <PageHeader
+        eyebrow="Our Work"
+        title="The"
+        accent="Gallery"
+        description="A look inside Glow Vie — our space, and real results from our treatments."
+      />
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux">
           <div className="mb-12 flex flex-wrap justify-center gap-3">
             {categories.map((c) => (

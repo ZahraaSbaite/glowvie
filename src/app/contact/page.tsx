@@ -1,7 +1,7 @@
 import { MapPin, Phone, Mail, MessageCircle, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { Sparkle } from "@/components/Sparkles";
 import { ContactForm } from "@/components/ContactForm";
+import { PageHeader } from "@/components/PageHeader";
 
 export const metadata = { title: "Contact — Glow Vie Beauty Clinic" };
 
@@ -10,12 +10,9 @@ export default async function ContactPage() {
 
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Get In Touch</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">Contact Us</h1>
-      </section>
+      <PageHeader eyebrow="Get In Touch" title="Contact" accent="Us" />
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux grid gap-14 lg:grid-cols-2">
           <div>
             <div className="mb-8 overflow-hidden rounded-xl3 border border-line">

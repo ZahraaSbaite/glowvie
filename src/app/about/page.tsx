@@ -1,18 +1,16 @@
 import Image from "next/image";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { Sparkle } from "@/components/Sparkles";
+import { PageHeader } from "@/components/PageHeader";
 
 export const metadata = { title: "About — Glow Vie Beauty Clinic" };
 
 export default function AboutPage() {
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Our Story</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">About Glow Vie</h1>
-      </section>
+      <PageHeader eyebrow="Our Story" title="About" accent="Glow Vie" />
 
-      <section className="bg-surface py-24">
+      <section className="py-24">
         <div className="container-lux grid items-center gap-14 md:grid-cols-2">
           <div className="relative h-[460px] overflow-hidden rounded-xl3">
             <Image

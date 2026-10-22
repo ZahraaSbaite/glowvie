@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { toUtcDate, formatPrice } from "@/lib/utils";
-import { Sparkle } from "@/components/Sparkles";
 import Link from "next/link";
+import { PageHeader } from "@/components/PageHeader";
 
 export const metadata = { title: "Offers — Glow Vie Beauty Clinic" };
 export const revalidate = 60;
@@ -15,13 +15,14 @@ export default async function OffersPage() {
 
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Special Offers</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">Current Offers</h1>
-        <p className="mx-auto mt-4 max-w-lg text-muted">Seasonal promotions, treatment packages, and new-client offers — book while they last.</p>
-      </section>
+      <PageHeader
+        eyebrow="Special Offers"
+        title="Current"
+        accent="Offers"
+        description="Seasonal promotions, treatment packages, and new-client offers — book while they last."
+      />
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux">
           {offers.length === 0 ? (
             <p className="text-center text-muted">No active offers right now — check back soon.</p>

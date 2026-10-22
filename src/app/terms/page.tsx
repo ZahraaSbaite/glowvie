@@ -2,7 +2,7 @@ export const metadata = { title: "Terms of Service — Glow Vie Beauty Clinic" }
 
 export default function TermsPage() {
   return (
-    <section className="bg-surface py-20">
+    <section className="py-20">
       <div className="container-lux mx-auto max-w-2xl">
         <h1 className="text-4xl text-ink">Terms of Service</h1>
         <p className="mt-6 text-sm leading-relaxed text-muted">

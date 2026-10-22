@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Poppins } from "next/font/google";
+// Fonts are bundled from npm (@fontsource) rather than fetched from Google at build/dev
+// time, so they always load even when Google Fonts is slow or unreachable.
+import "@fontsource/bodoni-moda/latin-400.css";
+import "@fontsource/bodoni-moda/latin-400-italic.css";
+import "@fontsource/bodoni-moda/latin-500.css";
+import "@fontsource/bodoni-moda/latin-500-italic.css";
+import "@fontsource/bodoni-moda/latin-600.css";
+import "@fontsource/dm-sans/latin-400.css";
+import "@fontsource/dm-sans/latin-500.css";
+import "@fontsource/dm-sans/latin-600.css";
+import "@fontsource/pinyon-script/latin-400.css";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmoothScroll } from "@/components/SmoothScroll";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-heading",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-poppins",
-});
 
 export const metadata: Metadata = {
   title: "Glow Vie Beauty Clinic — Reveal Your Natural Beauty",
@@ -38,11 +36,12 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${poppins.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
+        <div className="grain" aria-hidden="true" />
         <SmoothScroll>
           <Navbar />
           <main>{children}</main>

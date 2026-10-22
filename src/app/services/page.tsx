@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { Sparkle } from "@/components/Sparkles";
 import { ServiceCategoryList, type CategoryGroup } from "@/components/ServiceCategoryList";
+import { PageHeader } from "@/components/PageHeader";
 
 export const metadata = { title: "Services — Glow Vie Beauty Clinic" };
 export const revalidate = 60;
@@ -47,15 +47,14 @@ export default async function ServicesPage() {
 
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Treatments</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">Our Services</h1>
-        <p className="mx-auto mt-4 max-w-lg text-muted">
-          From facials to nails, lashes, and semi-permanent makeup — every treatment is tailored to you.
-        </p>
-      </section>
+      <PageHeader
+        eyebrow="Treatments"
+        title="Our"
+        accent="Services"
+        description="From facials to nails, lashes, and semi-permanent makeup — every treatment is tailored to you."
+      />
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux">
           <ServiceCategoryList groups={groups} />
         </div>

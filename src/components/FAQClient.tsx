@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { FAQAccordion } from "@/components/FAQAccordion";
-import { Sparkle } from "@/components/Sparkles";
 import { faqs, faqCategories } from "@/lib/faqs";
 import { classNames } from "@/lib/utils";
+import { PageHeader } from "@/components/PageHeader";
 
 export function FAQClient() {
   const [query, setQuery] = useState("");
@@ -22,21 +22,19 @@ export function FAQClient() {
 
   return (
     <>
-      <section className="bg-bg-soft py-20 text-center">
-        <span className="eyebrow flex items-center justify-center gap-2"><Sparkle size={14} /> Support</span>
-        <h1 className="mt-3 text-5xl text-ink md:text-6xl">Frequently Asked Questions</h1>
-        <div className="mx-auto mt-6 flex max-w-md items-center gap-2 rounded-full border border-line bg-surface px-5 py-3">
+      <PageHeader eyebrow="Support" title="Frequently asked" accent="questions">
+        <div className="mt-8 flex max-w-md items-center gap-2 rounded-full border border-line bg-surface px-5 py-3.5 shadow-soft">
           <Search size={16} className="text-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search questions…"
-            className="w-full text-sm outline-none"
+            className="w-full bg-transparent text-sm outline-none"
           />
         </div>
-      </section>
+      </PageHeader>
 
-      <section className="bg-surface py-20">
+      <section className="py-20">
         <div className="container-lux">
           <div className="mb-12 flex flex-wrap justify-center gap-3">
             {["All", ...faqCategories].map((c) => (

@@ -9,12 +9,12 @@ import { Sparkle } from "./Sparkles";
 export function Logo({ dark = false }: { dark?: boolean }) {
   return (
     <Link href="/" className="group flex items-center gap-2">
-      <Sparkle size={18} className={dark ? "text-white" : "text-brand-dark"} />
+      <Sparkle size={18} className="text-gold transition-transform duration-500 group-hover:rotate-90" />
       <span className="flex flex-col leading-none">
         <span className={`font-display text-xl font-semibold tracking-wide ${dark ? "text-white" : "text-ink"}`}>
-          GLOW <span className="text-brand-dark">VIE</span>
+          GLOW <em className="text-glow pr-0.5">Vie</em>
         </span>
-        <span className={`mt-1 text-[10px] font-medium uppercase tracking-[0.3em] ${dark ? "text-white/70" : "text-muted"}`}>
+        <span className={`mt-1 text-[9px] font-medium uppercase tracking-[0.35em] ${dark ? "text-white/70" : "text-muted"}`}>
           Beauty Clinic
         </span>
       </span>

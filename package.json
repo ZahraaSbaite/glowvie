@@ -17,6 +17,9 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@fontsource/bodoni-moda": "^5.3.0",
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/pinyon-script": "^5.3.0",
     "@prisma/client": "^5.20.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",

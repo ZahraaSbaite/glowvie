@@ -6,6 +6,11 @@ import { toUtcDate, formatPrice } from "@/lib/utils";
 import { Hero } from "@/components/Hero";
 import { Sparkle, SparkleField } from "@/components/Sparkles";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { TiltCard } from "@/components/TiltCard";
+import { Magnetic } from "@/components/Magnetic";
+import { RotatingBadge } from "@/components/RotatingBadge";
+import { ReviewForm } from "@/components/ReviewForm";
+import { TestimonialCarousel } from "@/components/TestimonialCarousel";
 
 export const revalidate = 60;
 
@@ -26,13 +31,14 @@ const CATEGORY_ICON: Record<string, typeof Droplet> = {
 export default async function HomePage() {
   const todayIso = new Date().toISOString().slice(0, 10);
 
-  const [services, featuredOffer, beforeAfterImage] = await Promise.all([
+  const [services, featuredOffer, beforeAfterImage, testimonials] = await Promise.all([
     prisma.service.findMany({ where: { isActive: true }, orderBy: { displayOrder: "asc" } }),
     prisma.offer.findFirst({
       where: { isActive: true, OR: [{ validUntil: null }, { validUntil: { gte: toUtcDate(todayIso) } }] },
       orderBy: [{ displayOrder: "asc" }, { createdAt: "desc" }],
     }),
     prisma.galleryImage.findFirst({ where: { isActive: true, isBeforeAfter: true }, orderBy: { displayOrder: "asc" } }),
+    prisma.testimonial.findMany({ where: { isActive: true }, orderBy: { createdAt: "desc" } }),
   ]);
 
   const categories = CATEGORY_ORDER.filter((c) => services.some((s) => s.category === c));
@@ -46,30 +52,45 @@ export default async function HomePage() {
       <Hero />
 
       {/* Choose Your Ritual */}
-      <section id="choose-your-ritual" className="bg-surface py-24">
+      <section id="choose-your-ritual" className="py-24 md:py-32">
         <div className="container-lux">
-          <ScrollReveal className="mx-auto max-w-xl text-center">
-            <span className="eyebrow">Our Categories</span>
-            <h2 className="mt-3 text-4xl uppercase text-ink md:text-5xl">Choose Your Ritual</h2>
+          <ScrollReveal className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <span className="eyebrow">Our Categories</span>
+              <h2 className="mt-5 text-5xl leading-[0.95] text-ink md:text-7xl">
+                Choose your <em className="text-glow pr-2">ritual</em>
+              </h2>
+            </div>
+            <p className="max-w-xs text-sm leading-relaxed text-muted">
+              Four ways to glow — each one tailored to you, from the first consultation to the final touch.
+            </p>
           </ScrollReveal>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((c, i) => (
-              <ScrollReveal key={c} delay={i * 0.08}>
-                <Link
-                  href={`/services?category=${encodeURIComponent(c)}`}
-                  className="group relative block h-80 overflow-hidden rounded-xl3 shadow-soft"
-                >
-                  <Image src={CATEGORY_INFO[c].image} alt={c} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                    <h3 className="text-2xl uppercase">{c}</h3>
-                    <p className="mt-1 text-xs text-white/80">{CATEGORY_INFO[c].blurb}</p>
-                    <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.15em] text-brand-light">
-                      Discover →
+              <ScrollReveal key={c} delay={i * 0.08} className={i % 2 ? "lg:mt-16" : ""}>
+                <TiltCard className="h-[26rem]">
+                  <Link
+                    href={`/services?category=${encodeURIComponent(c)}`}
+                    className="group relative block h-full overflow-hidden rounded-[2rem] shadow-soft"
+                  >
+                    <div className="tilt-card__media absolute -inset-4">
+                      <Image src={CATEGORY_INFO[c].image} alt={c} fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-plum/80 via-plum/10 to-transparent" />
+                    <div className="tilt-card__glare pointer-events-none absolute inset-0" />
+                    <span className="tilt-card__content absolute left-6 top-5 font-display text-lg italic text-white/90">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
-                  </div>
-                </Link>
+                    <div className="tilt-card__content absolute inset-x-0 bottom-0 p-6 text-white">
+                      <h3 className="text-4xl transition-all duration-500 group-hover:italic">{c}</h3>
+                      <p className="mt-1 text-xs text-white/80">{CATEGORY_INFO[c].blurb}</p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/40 px-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors group-hover:bg-white group-hover:text-plum">
+                        Discover →
+                      </span>
+                    </div>
+                  </Link>
+                </TiltCard>
               </ScrollReveal>
             ))}
           </div>
@@ -77,20 +98,15 @@ export default async function HomePage() {
       </section>
 
       {/* The Glow Menu */}
-      <section className="relative overflow-hidden bg-bg-soft py-24">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, rgb(var(--color-ink)) 1px, transparent 0)",
-            backgroundSize: "28px 28px",
-          }}
-        />
+      <section className="section-dark relative overflow-hidden rounded-[2.5rem] py-24 md:mx-3 md:py-32">
+        <SparkleField className="opacity-40" />
         <div className="container-lux relative">
-          <ScrollReveal className="mx-auto max-w-xl text-center">
-            <span className="text-xs font-semibold uppercase tracking-[0.35em] text-gold-dark">Pricing</span>
-            <h2 className="mt-3 font-display text-4xl uppercase text-ink md:text-5xl">The Glow Menu</h2>
-            <div className="mx-auto mt-5 h-px w-16 bg-gold" />
-            <p className="mx-auto mt-5 text-sm text-muted">A taste of what's waiting for you — full details on every treatment's own page.</p>
+          <ScrollReveal className="text-center">
+            <span className="eyebrow">Pricing</span>
+            <h2 className="mt-5 text-5xl leading-[0.95] text-ink md:text-7xl">
+              The <em className="text-glow pr-2">Glow</em> Menu
+            </h2>
+            <p className="mx-auto mt-5 max-w-md text-sm text-muted">A taste of what's waiting for you — full details on every treatment's own page.</p>
           </ScrollReveal>
 
           <div className="mt-16 grid gap-x-16 gap-y-14 md:grid-cols-2">
@@ -100,27 +116,27 @@ export default async function HomePage() {
                 <ScrollReveal key={category}>
                   <div>
                     <div className="flex items-center gap-3 border-b border-gold/40 pb-4">
-                      <Icon size={18} strokeWidth={1.5} className="text-gold-dark" />
-                      <h3 className="font-display text-2xl uppercase tracking-wide text-ink">{category}</h3>
+                      <Icon size={18} strokeWidth={1.5} className="text-gold" />
+                      <h3 className="font-display text-3xl italic text-ink">{category}</h3>
                     </div>
-                    <ul className="mt-5 space-y-4">
+                    <ul className="mt-5 space-y-1">
                       {items.slice(0, 6).map((s) => (
-                        <li key={s.id} className="flex items-baseline gap-3 text-sm">
-                          <span className="text-muted">{s.title}</span>
+                        <li key={s.id} className="group -mx-3 flex items-baseline gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-surface">
+                          <span className="text-ink/80 transition-colors group-hover:text-ink">{s.title}</span>
                           <span
-                            className="h-px flex-1 translate-y-[-3px]"
+                            className="h-px flex-1 translate-y-[-3px] opacity-60 transition-opacity group-hover:opacity-100"
                             style={{
                               backgroundImage:
                                 "repeating-linear-gradient(to right, rgb(var(--color-line)) 0, rgb(var(--color-line)) 2px, transparent 2px, transparent 6px)",
                             }}
                           />
-                          <span className="font-display text-base text-gold-dark">{s.price ? formatPrice(Number(s.price)) : "—"}</span>
+                          <span className="font-display text-lg text-gold-light">{s.price ? formatPrice(Number(s.price)) : "—"}</span>
                         </li>
                       ))}
                     </ul>
                     <Link
                       href={`/services?category=${encodeURIComponent(category)}`}
-                      className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.2em] text-gold-dark transition-colors hover:text-brand-dark"
+                      className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.2em] text-gold-light transition-colors hover:text-ink"
                     >
                       View Full Menu →
                     </Link>
@@ -131,20 +147,23 @@ export default async function HomePage() {
           </div>
 
           {featuredOffer && (
-            <ScrollReveal className="mt-16">
-              <div className="relative flex flex-col items-center gap-6 overflow-hidden rounded-xl3 border border-gold/40 bg-surface px-8 py-10 text-center shadow-soft md:flex-row md:justify-between md:text-left">
-                <SparkleField />
-                <div className="relative">
-                  <span className="text-xs font-semibold uppercase tracking-[0.35em] text-gold-dark">Special Offer</span>
-                  <h3 className="mt-3 font-display text-2xl uppercase leading-tight text-ink md:text-3xl">{featuredOffer.title}</h3>
-                  <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted md:mx-0">{featuredOffer.description}</p>
-                </div>
-                <div className="relative flex flex-col items-center gap-4 md:items-end">
-                  <div className="flex items-baseline gap-3">
-                    {featuredOffer.promoPrice !== null && <span className="font-display text-3xl text-gold-dark">{formatPrice(Number(featuredOffer.promoPrice))}</span>}
-                    {featuredOffer.originalPrice !== null && <span className="text-base text-muted line-through">{formatPrice(Number(featuredOffer.originalPrice))}</span>}
+            <ScrollReveal className="mt-20">
+              <div className="relative flex flex-col items-center gap-6 overflow-hidden rounded-[2rem] p-[1px] text-center md:text-left" style={{ backgroundImage: "var(--glow-gradient)" }}>
+                <div className="flex w-full flex-col items-center gap-6 rounded-[calc(2rem-1px)] bg-bg-soft px-8 py-10 md:flex-row md:justify-between">
+                  <div className="relative">
+                    <span className="eyebrow">Special Offer</span>
+                    <h3 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">{featuredOffer.title}</h3>
+                    <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted md:mx-0">{featuredOffer.description}</p>
                   </div>
-                  <Link href="/book" className="btn-primary w-fit">Book Now</Link>
+                  <div className="relative flex flex-col items-center gap-4 md:items-end">
+                    <div className="flex items-baseline gap-3">
+                      {featuredOffer.promoPrice !== null && <span className="text-glow font-display text-4xl">{formatPrice(Number(featuredOffer.promoPrice))}</span>}
+                      {featuredOffer.originalPrice !== null && <span className="text-base text-muted line-through">{formatPrice(Number(featuredOffer.originalPrice))}</span>}
+                    </div>
+                    <Magnetic>
+                      <Link href="/book" className="btn-primary w-fit">Book Now</Link>
+                    </Magnetic>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -153,39 +172,39 @@ export default async function HomePage() {
       </section>
 
       {/* The Glow Story */}
-      <section className="bg-surface py-24">
-        <div className="container-lux grid items-center gap-14 lg:grid-cols-2">
-          <ScrollReveal className="relative h-[460px] overflow-hidden rounded-xl3 shadow-soft">
-            <Image
-              src="/images/clinic.jpg"
-              alt="Glow Vie treatment room"
-              fill
-              className="object-cover"
-            />
+      <section className="py-24 md:py-32">
+        <div className="container-lux grid items-center gap-16 lg:grid-cols-2">
+          <ScrollReveal className="relative">
+            <div className="relative h-[480px] overflow-hidden rounded-[2.5rem] shadow-soft">
+              <Image src="/images/clinic.jpg" alt="Glow Vie treatment room" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+            </div>
+            <div className="absolute -bottom-10 -right-2 rounded-full bg-bg sm:-right-10">
+              <RotatingBadge id="story-badge" href="/about" text="Our story ✦ Our story ✦ Our story ✦ " />
+            </div>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
-            <span className="eyebrow flex items-center gap-2"><Sparkle size={14} /> Our Story</span>
-            <h2 className="mt-3 text-4xl uppercase leading-tight text-ink md:text-5xl">The Glow Story</h2>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
+            <span className="eyebrow">Our Story</span>
+            <h2 className="mt-5 text-5xl leading-[0.95] text-ink md:text-7xl">
+              The glow <em className="text-glow pr-2">story</em>
+            </h2>
+            <p className="mt-6 max-w-md text-base leading-relaxed text-muted">
               At Glow Vie, we believe beauty is more than skin deep. It's an experience, a
               ritual, a moment of self-care. Our mission is to enhance your natural glow with
               expert care and treatments tailored just for you.
             </p>
-            <Link href="/about" className="btn-outline mt-7 inline-flex">Learn More</Link>
+            <Link href="/about" className="btn-outline mt-8 inline-flex">Learn More</Link>
 
-            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5">
+            <div className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-[1.5rem] border border-line bg-line">
               {[
                 { title: "Personalized", desc: "Just for you." },
                 { title: "Intentional", desc: "Every detail matters." },
                 { title: "Elegant", desc: "Luxury in every visit." },
                 { title: "Confident", desc: "Because you deserve it." },
               ].map((f) => (
-                <div key={f.title} className="flex items-start gap-2.5">
-                  <Sparkle size={14} className="mt-0.5 shrink-0 text-brand-dark" />
-                  <div>
-                    <p className="text-sm font-medium text-ink">{f.title}</p>
-                    <p className="text-xs text-muted">{f.desc}</p>
-                  </div>
+                <div key={f.title} className="group bg-bg p-5 transition-colors hover:bg-surface">
+                  <Sparkle size={14} className="text-gold transition-transform duration-500 group-hover:rotate-90" />
+                  <p className="mt-3 font-display text-xl italic text-ink">{f.title}</p>
+                  <p className="text-xs text-muted">{f.desc}</p>
                 </div>
               ))}
             </div>
@@ -193,8 +212,46 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Client Love */}
+      <section id="testimonials" className="scroll-mt-24 py-24 md:py-32">
+        <div className="container-lux">
+          <ScrollReveal>
+            <span className="eyebrow">Client Love</span>
+            <h2 className="mt-5 text-5xl leading-[0.95] text-ink md:text-7xl">
+              Leave a <em className="text-glow pr-2">review</em>
+            </h2>
+          </ScrollReveal>
+
+          <ScrollReveal className="mt-14">
+            <TestimonialCarousel
+              testimonials={testimonials.map((t) => ({ id: t.id, name: t.name, rating: t.rating, quote: t.quote }))}
+            />
+          </ScrollReveal>
+
+          {/* Same plum panel language as the Glow Menu: heading on the left, form on the right. */}
+          <ScrollReveal className="mt-20">
+            <div className="section-dark relative overflow-hidden rounded-[2.5rem] px-6 py-14 sm:px-12 md:py-20 lg:px-16">
+              <SparkleField className="opacity-40" />
+              <div className="relative grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+                <div>
+                  <span className="eyebrow">Share Your Experience</span>
+                  <h3 className="mt-5 text-5xl leading-[0.95] text-ink md:text-6xl">
+                    How was your <em className="text-glow pr-2">visit?</em>
+                  </h3>
+                  <p className="mt-6 max-w-sm text-base leading-relaxed text-muted">
+                    We'd love to hear how your visit went. Every review is read by our team — and helps the next guest find their glow.
+                  </p>
+                  <Quote size={56} strokeWidth={1} className="mt-10 hidden text-gold/50 lg:block" />
+                </div>
+                <ReviewForm />
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Quick-links strip */}
-      <section className="bg-bg-soft py-16">
+      <section className="pb-24 md:pb-32">
         <div className="container-lux grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <QuickTile
             href="/gallery"
@@ -203,7 +260,7 @@ export default async function HomePage() {
             cta="Explore"
             image={beforeAfterImage?.afterUrl || "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200"}
           />
-          <QuickTile href="/testimonials" label="Testimonials" desc="What our clients say about us." cta="Read More" icon />
+          <QuickTile href="#testimonials" label="Testimonials" desc="What our clients say about us." cta="Read More" icon />
           <QuickTile
             href="/book"
             label="Book Appointment"
@@ -218,16 +275,6 @@ export default async function HomePage() {
             cta="Get Directions"
             image="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1200"
           />
-        </div>
-      </section>
-
-      {/* Ready to Glow CTA */}
-      <section className="relative overflow-hidden bg-brand-light py-20 text-center">
-        <SparkleField />
-        <div className="container-lux relative">
-          <h2 className="text-4xl uppercase text-ink md:text-5xl">Ready to Glow?</h2>
-          <p className="mx-auto mt-3 max-w-md text-muted">Book your appointment and let us take care of the rest.</p>
-          <Link href="/book" className="btn-primary mt-8 inline-flex">Book Your Appointment →</Link>
         </div>
       </section>
     </>
@@ -251,21 +298,21 @@ function QuickTile({
 }) {
   return (
     <ScrollReveal>
-      <Link href={href} className="group relative block h-56 overflow-hidden rounded-xl2 shadow-soft">
+      <Link href={href} className="group relative block h-64 overflow-hidden rounded-[1.75rem] shadow-soft">
         {icon ? (
-          <div className="flex h-full w-full flex-col items-center justify-center bg-brand-light">
-            <Quote size={32} className="text-brand-dark" />
+          <div className="flex h-full w-full flex-col items-center justify-center" style={{ backgroundImage: "var(--glow-gradient)" }}>
+            <Quote size={36} className="text-plum transition-transform duration-500 group-hover:scale-110" />
           </div>
         ) : (
           <>
-            <Image src={image!} alt={label} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
+            <Image src={image!} alt={label} fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-plum/80 via-plum/10 to-transparent" />
           </>
         )}
-        <div className={`absolute inset-x-0 bottom-0 p-5 ${icon ? "text-ink" : "text-white"}`}>
-          <h3 className="text-sm font-semibold uppercase tracking-wide">{label}</h3>
-          <p className={`mt-1 text-xs ${icon ? "text-muted" : "text-white/80"}`}>{desc}</p>
-          <span className="mt-2 inline-block text-xs font-medium uppercase tracking-[0.15em] text-brand-dark">{cta} →</span>
+        <div className={`absolute inset-x-0 bottom-0 p-5 ${icon ? "text-plum" : "text-white"}`}>
+          <h3 className="font-display text-2xl transition-all group-hover:italic">{label}</h3>
+          <p className={`mt-1 text-xs ${icon ? "text-plum/70" : "text-white/80"}`}>{desc}</p>
+          <span className="mt-2 inline-block text-[10px] font-medium uppercase tracking-[0.2em]">{cta} →</span>
         </div>
       </Link>
     </ScrollReveal>

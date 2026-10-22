@@ -11,7 +11,7 @@ const points = [
 
 export function WhyChooseUs() {
   return (
-    <section className="bg-surface py-24">
+    <section className="py-24">
       <div className="container-lux">
         <div className="mx-auto max-w-xl text-center">
           <span className="eyebrow">Why Glow Vie</span>

@@ -3,21 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: 255 255 255;
-  --color-bg-soft: 248 243 241;
+  --font-heading: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-script: "Pinyon Script", cursive;
+
+  --color-bg: 251 247 244;
+  --color-bg-soft: 246 237 232;
   --color-surface: 255 255 255;
-  --color-ink: 17 17 17;
-  --color-muted: 102 102 102;
-  --color-line: 236 231 229;
+  --color-ink: 34 20 27;
+  --color-muted: 112 96 102;
+  --color-line: 234 224 219;
+
+  /* The signature "glow": blush → peach → gold → lilac, looping back to blush so it can flow. */
+  --glow-gradient: linear-gradient(100deg, #e39a9c 0%, #f4c3a8 17%, #c9a66b 33%, #cdb6e6 50%, #e39a9c 67%, #f4c3a8 83%, #c9a66b 100%);
 }
 
 .dark {
-  --color-bg: 24 19 21;
-  --color-bg-soft: 32 25 28;
-  --color-surface: 43 34 38;
-  --color-ink: 240 234 232;
-  --color-muted: 168 156 154;
-  --color-line: 58 47 51;
+  --color-bg: 20 13 17;
+  --color-bg-soft: 29 19 24;
+  --color-surface: 38 26 32;
+  --color-ink: 246 236 232;
+  --color-muted: 176 158 163;
+  --color-line: 61 45 52;
 }
 
 /* Used by the admin dashboard so it always renders light, regardless of the
@@ -25,12 +32,25 @@
    since Navbar/Footer are shared chrome — this re-asserts light values for
    everything nested inside the admin layout). */
 .force-light {
-  --color-bg: 255 255 255;
-  --color-bg-soft: 248 243 241;
+  --color-bg: 251 247 244;
+  --color-bg-soft: 246 237 232;
   --color-surface: 255 255 255;
-  --color-ink: 17 17 17;
-  --color-muted: 102 102 102;
-  --color-line: 236 231 229;
+  --color-ink: 34 20 27;
+  --color-muted: 112 96 102;
+  --color-line: 234 224 219;
+}
+
+/* Deep plum contrast band. Re-points the tokens so everything nested inside
+   (text-ink, border-line, card-lux…) adapts without per-element overrides. */
+.section-dark {
+  --color-bg: 42 22 33;
+  --color-bg-soft: 52 30 42;
+  --color-surface: 58 34 47;
+  --color-ink: 248 238 234;
+  --color-muted: 196 176 182;
+  --color-line: 82 56 68;
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-ink));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -54,34 +74,163 @@ body {
 
 h1, h2, h3, h4 {
   @apply font-display;
+  letter-spacing: -0.01em;
 }
 
 ::selection {
-  background: #D9BEBE;
-  color: #111111;
+  background: #f4c3a8;
+  color: #22141b;
+}
+
+/* Fine film grain over the whole site for a printed, editorial feel. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark .grain {
+  mix-blend-mode: screen;
+  opacity: 0.05;
 }
 
 .container-lux {
   @apply mx-auto w-full max-w-7xl px-6 md:px-10;
 }
 
+@keyframes glow-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 200% 50%; }
+}
+
+/* Gradient-filled text that slowly flows through the glow palette. */
+.text-glow {
+  background-image: var(--glow-gradient);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: glow-flow 8s linear infinite;
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(var(--color-ink) / 0.55);
+}
+
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3 text-xs font-medium uppercase tracking-[0.15em] text-white shadow-card transition-all duration-300 hover:bg-brand-dark hover:shadow-soft;
+  @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-ink px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-bg transition-all duration-300 hover:-translate-y-0.5 hover:text-plum hover:shadow-glow;
+}
+
+/* The glow gradient washes in on hover, sitting between the button's fill and its label. */
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--glow-gradient);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: glow-flow 8s linear infinite;
+}
+
+.btn-primary:hover::before {
+  opacity: 1;
 }
 
 .btn-outline {
-  @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand px-7 py-3 text-xs font-medium uppercase tracking-[0.15em] text-ink transition-all duration-300 hover:bg-brand hover:text-white;
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/25 px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-bg;
+}
+
+/* TiltCard (src/components/TiltCard.tsx) drives these variables from the cursor. */
+.tilt-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 0;
+  --my: 0;
+  --gx: 50%;
+  --gy: 50%;
+  --glare: 0;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.tilt-card[data-tilting] {
+  transition-duration: 0.2s;
+}
+
+.tilt-card__media,
+.tilt-card__content {
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.tilt-card[data-tilting] .tilt-card__media,
+.tilt-card[data-tilting] .tilt-card__content {
+  transition-duration: 0.2s;
+}
+
+.tilt-card__media {
+  transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -12px), 0);
+}
+
+.tilt-card__content {
+  transform: translate3d(calc(var(--mx) * 6px), calc(var(--my) * 6px), 0);
+}
+
+.tilt-card__glare {
+  background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, 0.4), transparent 55%);
+  mix-blend-mode: soft-light;
+  opacity: var(--glare);
+  transition: opacity 0.4s ease;
 }
 
 .card-lux {
-  @apply rounded-xl3 border border-line bg-surface shadow-soft transition-all duration-300;
+  @apply rounded-[1.75rem] border border-line bg-surface shadow-soft transition-all duration-300;
 }
 
 .eyebrow {
-  @apply text-xs font-semibold uppercase tracking-[0.25em] text-brand-dark;
+  @apply inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background-image: var(--glow-gradient);
+}
+
+/* The hero name: solid deep plum with a soft rose-gold halo that breathes. */
+.hero-name {
+  color: #2a1621;
+  animation: name-halo 4s ease-in-out infinite;
+}
+
+/* Plum would vanish on the dark theme's background, so it switches to the light ink there. */
+.dark .hero-name {
+  color: rgb(var(--color-ink));
+}
+
+@keyframes name-halo {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(232, 121, 155, 0.35)) drop-shadow(0 0 30px rgba(244, 169, 138, 0.25)); }
+  50% { filter: drop-shadow(0 0 18px rgba(232, 121, 155, 0.6)) drop-shadow(0 0 50px rgba(217, 164, 65, 0.4)); }
+}
+
+/* Hero wordmark letters lift and lean when hovered. */
+.hero-letter {
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-letter:hover {
+  transform: translateY(-5%) skewX(-6deg);
 }
 
 :focus-visible {
-  outline: 2px solid #C29E9E;
+  outline: 2px solid #c29e9e;
   outline-offset: 3px;
 }
