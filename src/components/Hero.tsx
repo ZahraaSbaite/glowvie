@@ -81,7 +81,7 @@ export function Hero() {
         <span>Beirut</span>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-2 py-6">
+      <div className="flex flex-1 items-center justify-center px-2 pb-4 pt-16 md:pt-20">
         <h1
           data-hero-word
           aria-label="Glow Vie"
@@ -108,7 +108,7 @@ export function Hero() {
         {/* Tagline and description sit side by side, split by a thin gradient rule. */}
         <div data-hero-fade className="grid gap-5 md:grid-cols-2 md:items-center md:gap-12">
           <p className="font-display text-3xl italic leading-tight text-ink md:text-5xl">Your beauty, your ritual.</p>
-          <p className="max-w-md text-base leading-relaxed text-muted md:border-l md:border-ink/15 md:pl-12">
+          <p className="max-w-md text-base leading-relaxed text-muted md:mt-10 md:border-l md:border-ink/15 md:pl-12">
             Luxury beauty treatments designed to reveal the most confident you — nails, lashes, facials, and semi-permanent makeup in a space built entirely around you.
           </p>
         </div>
