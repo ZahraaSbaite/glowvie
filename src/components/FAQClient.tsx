@@ -23,7 +23,7 @@ export function FAQClient() {
   return (
     <>
       <PageHeader eyebrow="Support" title="Frequently asked" accent="questions">
-        <div className="mt-8 flex max-w-md items-center gap-2 rounded-full border border-line bg-surface px-5 py-3.5 shadow-soft">
+        <div className="mt-8 flex w-full max-w-md items-center gap-2 rounded-full border border-line bg-surface px-5 py-3.5 shadow-soft">
           <Search size={16} className="text-muted" />
           <input
             value={query}

@@ -68,7 +68,7 @@ export function Navbar() {
                 >
                   {l.label}
                   {isActive(l.href) && (
-                    <span className="absolute inset-x-3.5 -bottom-0.5 h-px" style={{ backgroundImage: "var(--glow-gradient)" }} />
+                    <span className="absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-brand" />
                   )}
                 </Link>
               </li>

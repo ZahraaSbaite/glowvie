@@ -53,6 +53,28 @@
   color: rgb(var(--color-ink));
 }
 
+/* Dusty rose band — the third colour. Same token trick as .section-dark: plum text on rose,
+   with lighter-rose "surface" for cards sitting on it. */
+.section-rose {
+  --color-bg: 216 167 167;
+  --color-bg-soft: 226 186 185;
+  --color-surface: 241 221 219;
+  --color-ink: 42 22 33;
+  --color-muted: 92 52 66;
+  --color-line: 196 143 145;
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-ink));
+}
+
+/* The pastel glow gradient would vanish on rose, so accents there flow plum → wine instead. */
+.section-rose .text-glow {
+  background-image: linear-gradient(100deg, #2a1621 0%, #7a3b52 25%, #2a1621 50%, #7a3b52 75%, #2a1621 100%);
+}
+
+.section-rose .section-dark .text-glow {
+  background-image: var(--glow-gradient);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -122,8 +144,19 @@ h1, h2, h3, h4 {
   -webkit-text-stroke: 1px rgb(var(--color-ink) / 0.55);
 }
 
+/* Main call to action: a dusty rose pill (the third colour) with plum text. */
 .btn-primary {
-  @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-ink px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-bg transition-all duration-300 hover:-translate-y-0.5 hover:text-plum hover:shadow-glow;
+  @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-brand px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-plum transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow;
+}
+
+/* On a rose panel a rose button would disappear, so it flips to plum there… */
+.section-rose .btn-primary {
+  @apply bg-plum text-[#f8eeea] hover:text-plum;
+}
+
+/* …but a plum panel nested inside a rose one gets the rose button back. */
+.section-rose .section-dark .btn-primary {
+  @apply bg-brand text-plum;
 }
 
 /* The glow gradient washes in on hover, sitting between the button's fill and its label. */

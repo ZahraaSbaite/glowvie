@@ -52,7 +52,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* Choose Your Ritual */}
-      <section id="choose-your-ritual" className="py-24 md:py-32">
+      <section id="choose-your-ritual" className="section-rose mb-3 rounded-[2.5rem] py-24 md:mx-3 md:py-32">
         <div className="container-lux">
           <ScrollReveal className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
@@ -213,7 +213,7 @@ export default async function HomePage() {
       </section>
 
       {/* Client Love */}
-      <section id="testimonials" className="scroll-mt-24 py-24 md:py-32">
+      <section id="testimonials" className="section-rose scroll-mt-24 rounded-[2.5rem] py-24 md:mx-3 md:py-32">
         <div className="container-lux">
           <ScrollReveal>
             <span className="eyebrow">Client Love</span>
@@ -251,7 +251,7 @@ export default async function HomePage() {
       </section>
 
       {/* Quick-links strip */}
-      <section className="pb-24 md:pb-32">
+      <section className="pb-24 pt-16 md:pb-32 md:pt-20">
         <div className="container-lux grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <QuickTile
             href="/gallery"

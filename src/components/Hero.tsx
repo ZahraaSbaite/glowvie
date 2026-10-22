@@ -14,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLDivElement>(null);
 
   // Entrance: the wordmark's letters rise out of a blur one by one, then the rest fades up.
   // As the hero scrolls away, the word drifts down and fades.
@@ -65,6 +66,67 @@ export function Hero() {
     return () => root.removeEventListener("pointermove", onMove);
   }, []);
 
+  // The name is alive: it tilts in 3D toward the cursor (or with the phone's own tilt), and
+  // its glow swells while hovered. Clicking it bursts sparkles (see ClickSparkles).
+  useEffect(() => {
+    const root = rootRef.current;
+    const name = nameRef.current;
+    const spot = spotlightRef.current;
+    if (!root || !name || !spot) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const rxTo = gsap.quickTo(name, "rotationX", { duration: 0.9, ease: "power3.out" });
+    const ryTo = gsap.quickTo(name, "rotationY", { duration: 0.9, ease: "power3.out" });
+    const clamp = gsap.utils.clamp;
+
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      const onMove = (e: PointerEvent) => {
+        const rect = root.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width - 0.5;
+        const py = (e.clientY - rect.top) / rect.height - 0.45;
+        ryTo(px * 22);
+        rxTo(-py * 16);
+      };
+      const onLeave = () => {
+        ryTo(0);
+        rxTo(0);
+      };
+      const onEnterName = () => gsap.to(spot, { scale: 1.35, opacity: 1, duration: 0.8, ease: "power3.out" });
+      const onLeaveName = () => gsap.to(spot, { scale: 1, opacity: 0.7, duration: 1, ease: "power3.out" });
+
+      root.addEventListener("pointermove", onMove);
+      root.addEventListener("pointerleave", onLeave);
+      name.addEventListener("pointerenter", onEnterName);
+      name.addEventListener("pointerleave", onLeaveName);
+      return () => {
+        root.removeEventListener("pointermove", onMove);
+        root.removeEventListener("pointerleave", onLeave);
+        name.removeEventListener("pointerenter", onEnterName);
+        name.removeEventListener("pointerleave", onLeaveName);
+      };
+    }
+
+    // Touch devices: follow the phone's tilt. iOS only allows this after a tap, so ask then.
+    const onOrient = (e: DeviceOrientationEvent) => {
+      if (e.gamma === null || e.beta === null) return;
+      ryTo(clamp(-16, 16, e.gamma * 0.5));
+      rxTo(clamp(-12, 12, (e.beta - 45) * -0.35));
+    };
+    const enable = () => window.addEventListener("deviceorientation", onOrient);
+    const DOE = window.DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> } | undefined;
+    const ask = () => {
+      DOE?.requestPermission?.()
+        .then((state) => state === "granted" && enable())
+        .catch(() => {});
+    };
+    if (typeof DOE?.requestPermission === "function") root.addEventListener("touchend", ask, { once: true });
+    else enable();
+    return () => {
+      window.removeEventListener("deviceorientation", onOrient);
+      root.removeEventListener("touchend", ask);
+    };
+  }, []);
+
   return (
     <section ref={rootRef} className="relative isolate flex min-h-[calc(100svh-5.5rem)] flex-col overflow-hidden">
       <GlowBlobs />
@@ -81,27 +143,29 @@ export function Hero() {
         <span>Beirut</span>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-2 pb-4 pt-16 md:pt-20">
-        <h1
-          data-hero-word
-          aria-label="Glow Vie"
-          className="select-none text-center font-display text-[27vw] font-medium leading-[0.82] tracking-[-0.04em] sm:text-[15.5vw]"
-        >
-          {/* The name is set as a calligraphic signature. Each word animates in whole,
-              since script letters join and can't be split apart. */}
-          {["Glow", "Vie"].map((word, w) => (
-            <span key={word} className={`block whitespace-nowrap sm:inline ${w > 0 ? "sm:ml-[0.1em]" : ""}`} aria-hidden="true">
-              <span data-hero-letter className="inline-block">
-                <span
-                  className="hero-letter hero-name inline-block px-[0.08em] font-script text-[1.35em] font-normal tracking-normal"
-                  style={{ animationDelay: `${-w * 1.4}s` }}
-                >
-                  {word}
+      <div className="flex flex-1 items-center justify-center px-2 pb-4 pt-16 md:pt-20" style={{ perspective: "1200px" }}>
+        <div ref={nameRef} data-sparkle-big className="cursor-pointer" style={{ transformStyle: "preserve-3d" }}>
+          <h1
+            data-hero-word
+            aria-label="Glow Vie"
+            className="select-none text-center font-display text-[27vw] font-medium leading-[0.82] tracking-[-0.04em] sm:text-[15.5vw]"
+          >
+            {/* The name is set as a calligraphic signature. Each word animates in whole,
+                since script letters join and can't be split apart. */}
+            {["Glow", "Vie"].map((word, w) => (
+              <span key={word} className={`block whitespace-nowrap sm:inline ${w > 0 ? "sm:ml-[0.1em]" : ""}`} aria-hidden="true">
+                <span data-hero-letter className="inline-block">
+                  <span
+                    className="hero-letter hero-name inline-block px-[0.08em] font-script text-[1.35em] font-normal tracking-normal"
+                    style={{ animationDelay: `${-w * 1.4}s` }}
+                  >
+                    {word}
+                  </span>
                 </span>
               </span>
-            </span>
-          ))}
-        </h1>
+            ))}
+          </h1>
+        </div>
       </div>
 
       <div className="container-lux pb-8">

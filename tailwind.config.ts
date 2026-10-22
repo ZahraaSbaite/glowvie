@@ -12,10 +12,11 @@ const config: Config = {
         ink: "rgb(var(--color-ink) / <alpha-value>)",
         muted: "rgb(var(--color-muted) / <alpha-value>)",
         line: "rgb(var(--color-line) / <alpha-value>)",
+        // Dusty rose — the site's third colour alongside cream and plum.
         brand: {
-          DEFAULT: "#D9BEBE",
-          dark: "#C29E9E",
-          light: "#EAD9D9",
+          DEFAULT: "#D8A7A7",
+          dark: "#B57F82",
+          light: "#EDD3D1",
         },
         gold: {
           DEFAULT: "#C9A66B",
