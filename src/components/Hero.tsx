@@ -87,27 +87,20 @@ export function Hero() {
           aria-label="Glow Vie"
           className="select-none text-center font-display text-[27vw] font-medium leading-[0.82] tracking-[-0.04em] sm:text-[15.5vw]"
         >
-          {/* "GLOW" in Bodoni capitals, letter by letter; "Vie" as one calligraphic word,
+          {/* The name is set as a calligraphic signature. Each word animates in whole,
               since script letters join and can't be split apart. */}
-          <span className="block whitespace-nowrap sm:inline" aria-hidden="true">
-            {"GLOW".split("").map((ch, i) => (
-              <span key={i} data-hero-letter className="inline-block">
-                <span className="hero-letter hero-name inline-block" style={{ animationDelay: `${-i * 0.35}s` }}>
-                  {ch}
+          {["Glow", "Vie"].map((word, w) => (
+            <span key={word} className={`block whitespace-nowrap sm:inline ${w > 0 ? "sm:ml-[0.1em]" : ""}`} aria-hidden="true">
+              <span data-hero-letter className="inline-block">
+                <span
+                  className="hero-letter hero-name inline-block px-[0.08em] font-script text-[1.35em] font-normal tracking-normal"
+                  style={{ animationDelay: `${-w * 1.4}s` }}
+                >
+                  {word}
                 </span>
               </span>
-            ))}
-          </span>
-          <span className="block whitespace-nowrap sm:ml-[0.12em] sm:inline" aria-hidden="true">
-            <span data-hero-letter className="inline-block">
-              <span
-                className="hero-letter hero-name inline-block px-[0.08em] font-script text-[1.15em] font-normal tracking-normal"
-                style={{ animationDelay: "-1.4s" }}
-              >
-                Vie
-              </span>
             </span>
-          </span>
+          ))}
         </h1>
       </div>
 
