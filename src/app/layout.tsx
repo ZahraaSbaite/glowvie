@@ -15,6 +15,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ClickSparkles } from "@/components/ClickSparkles";
+import { ScrollEffects, ScrollProgress } from "@/components/ScrollEffects";
 
 export const metadata: Metadata = {
   title: "Glow Vie Beauty Clinic — Reveal Your Natural Beauty",
@@ -22,14 +23,14 @@ export const metadata: Metadata = {
     "Premium beauty treatments in a luxurious, minimal setting. Facials, nails, lashes, and semi-permanent makeup — book your appointment online.",
 };
 
-// The page is server-rendered with the .dark class already on <html>, so dark is the
-// default with no flash. This runs before hydration and only switches to light when the
-// visitor has explicitly chosen it via the toggle (we deliberately ignore the OS preference).
+// Runs before hydration to set the .dark class synchronously, so there's no flash of the
+// wrong theme on load. Light is the default — dark only applies once the visitor has
+// explicitly chosen it via the toggle (we deliberately ignore the OS preference here).
 const themeInitScript = `
 (function() {
   try {
-    if (localStorage.getItem('glowvie-theme') === 'light') {
-      document.documentElement.classList.remove('dark');
+    if (localStorage.getItem('glowvie-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
     }
   } catch (e) {}
 })();
@@ -37,13 +38,15 @@ const themeInitScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         <div className="grain" aria-hidden="true" />
         <ClickSparkles />
+        <ScrollProgress />
+        <ScrollEffects />
         <SmoothScroll>
           <Navbar />
           <main>{children}</main>

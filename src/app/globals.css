@@ -180,47 +180,54 @@ h1, h2, h3, h4 {
   @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/25 px-7 py-3.5 text-xs font-medium uppercase tracking-[0.18em] text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-bg;
 }
 
-/* TiltCard (src/components/TiltCard.tsx) drives these variables from the cursor. */
-.tilt-card {
-  --rx: 0deg;
-  --ry: 0deg;
-  --mx: 0;
-  --my: 0;
-  --gx: 50%;
-  --gy: 50%;
-  --glare: 0;
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform;
+/* FlipCard (src/components/FlipCard.tsx): two stacked faces that turn over in 3D. */
+.flip-card {
+  perspective: 1400px;
+  cursor: pointer;
+  outline-offset: 6px;
 }
 
-.tilt-card[data-tilting] {
-  transition-duration: 0.2s;
+.flip-card__inner {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-.tilt-card__media,
-.tilt-card__content {
-  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+/* Keyboard focus only (:focus-visible), so a mouse click doesn't leave the card stuck flipped. */
+.flip-card[data-flipped] .flip-card__inner,
+.flip-card:focus-visible .flip-card__inner,
+.flip-card:has(:focus-visible) .flip-card__inner {
+  transform: rotateY(180deg);
 }
 
-.tilt-card[data-tilting] .tilt-card__media,
-.tilt-card[data-tilting] .tilt-card__content {
-  transition-duration: 0.2s;
+@media (hover: hover) and (pointer: fine) {
+  .flip-card:hover .flip-card__inner {
+    transform: rotateY(180deg);
+  }
 }
 
-.tilt-card__media {
-  transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -12px), 0);
+.flip-card__face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
-.tilt-card__content {
-  transform: translate3d(calc(var(--mx) * 6px), calc(var(--my) * 6px), 0);
+.flip-card__back {
+  transform: rotateY(180deg);
 }
 
-.tilt-card__glare {
-  background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, 0.4), transparent 55%);
-  mix-blend-mode: soft-light;
-  opacity: var(--glare);
-  transition: opacity 0.4s ease;
+/* Gallery photos rest at different depths and come forward when hovered. */
+.gallery-depth {
+  transform: translateZ(var(--z, 0px));
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+}
+
+.gallery-depth:hover,
+.gallery-depth:focus-visible {
+  transform: translateZ(calc(var(--z, 0px) + 90px));
+  box-shadow: 0 30px 60px -20px rgba(42, 22, 33, 0.45);
 }
 
 .card-lux {

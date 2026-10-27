@@ -12,7 +12,7 @@ export default function AboutPage() {
 
       <section className="py-24">
         <div className="container-lux grid items-center gap-14 md:grid-cols-2">
-          <div className="relative h-[460px] overflow-hidden rounded-xl3">
+          <div data-parallax className="relative h-[460px] overflow-hidden rounded-xl3">
             <Image
               src="/images/clinic.jpg"
               alt="Glow Vie treatment room"

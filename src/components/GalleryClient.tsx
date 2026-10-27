@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { classNames } from "@/lib/utils";
 import { PageHeader } from "@/components/PageHeader";
+import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Resting depth (px) for each photo, cycled — gives the grid its layered, 3D-room feel.
+const DEPTHS = [40, -30, 70, 0, -50, 30, 60, -20];
 
 type GalleryItem = {
   id: string;
@@ -22,6 +30,8 @@ export function GalleryClient() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const wallRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/gallery")
@@ -49,6 +59,38 @@ export function GalleryClient() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [lightboxIndex, closeLightbox, showPrev, showNext]);
+
+  // The photo wall tilts in 3D: with the mouse (left/right, up/down) and as it scrolls past.
+  useEffect(() => {
+    const stage = stageRef.current;
+    const wall = wallRef.current;
+    if (!stage || !wall || loading) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        wall,
+        { rotationX: 10 },
+        { rotationX: -6, ease: "none", scrollTrigger: { trigger: stage, start: "top bottom", end: "bottom top", scrub: true } }
+      );
+    });
+
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return () => ctx.revert();
+
+    const ryTo = gsap.quickTo(wall, "rotationY", { duration: 1, ease: "power3.out" });
+    const onMove = (e: PointerEvent) => {
+      const rect = stage.getBoundingClientRect();
+      ryTo(((e.clientX - rect.left) / rect.width - 0.5) * 12);
+    };
+    const onLeave = () => ryTo(0);
+    stage.addEventListener("pointermove", onMove);
+    stage.addEventListener("pointerleave", onLeave);
+    return () => {
+      stage.removeEventListener("pointermove", onMove);
+      stage.removeEventListener("pointerleave", onLeave);
+      ctx.revert();
+    };
+  }, [loading]);
 
   const active = lightboxIndex !== null ? filtered[lightboxIndex] : null;
 
@@ -83,26 +125,36 @@ export function GalleryClient() {
           ) : filtered.length === 0 ? (
             <p className="text-center text-muted">No images in this category yet.</p>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {filtered.map((item, i) => (
-                <button
-                  key={item.id}
-                  onClick={() => setLightboxIndex(i)}
-                  className="group relative aspect-square overflow-hidden rounded-xl2"
-                >
-                  {item.isBeforeAfter ? (
-                    <div className="grid h-full grid-cols-2">
-                      <img src={item.beforeUrl} alt={`${item.title || item.category} before`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <img src={item.afterUrl} alt={`${item.title || item.category} after`} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <div ref={stageRef} className="px-2 py-6" style={{ perspective: "1600px" }}>
+              <div
+                ref={wallRef}
+                className="grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-8 lg:grid-cols-4 lg:gap-10"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                {filtered.map((item, i) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setLightboxIndex(i)}
+                    className="gallery-depth group relative aspect-square overflow-hidden rounded-[1.5rem] shadow-soft"
+                    style={{ "--z": `${DEPTHS[i % DEPTHS.length]}px` } as React.CSSProperties}
+                  >
+                    {item.isBeforeAfter ? (
+                      <BeforeAfterSlider
+                        mode="follow"
+                        before={item.beforeUrl}
+                        after={item.afterUrl}
+                        alt={item.title || item.category}
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <img src={item.imageUrl} alt={item.title || item.category} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    )}
+                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-ink/60 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
+                      <span className="text-xs font-medium text-white">{item.title || item.category}</span>
                     </div>
-                  ) : (
-                    <img src={item.imageUrl} alt={item.title || item.category} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  )}
-                  <div className="absolute inset-0 flex items-end bg-gradient-to-t from-ink/60 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="text-xs font-medium text-white">{item.title || item.category}</span>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -122,16 +174,15 @@ export function GalleryClient() {
 
           <div className="max-h-[85vh] max-w-4xl" onClick={(e) => e.stopPropagation()}>
             {active.isBeforeAfter ? (
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <img src={active.beforeUrl} alt="Before" className="max-h-[75vh] w-full rounded-xl2 object-contain" />
-                  <p className="mt-2 text-center text-xs uppercase tracking-wider text-white/70">Before</p>
-                </div>
-                <div>
-                  <img src={active.afterUrl} alt="After" className="max-h-[75vh] w-full rounded-xl2 object-contain" />
-                  <p className="mt-2 text-center text-xs uppercase tracking-wider text-white/70">After</p>
-                </div>
-              </div>
+              <>
+                <BeforeAfterSlider
+                  before={active.beforeUrl}
+                  after={active.afterUrl}
+                  alt={active.title || active.category}
+                  className="aspect-[4/5] h-[min(75vh,118vw)] max-w-[88vw] rounded-[1.5rem]"
+                />
+                <p className="mt-3 text-center text-xs uppercase tracking-[0.2em] text-white/70">Drag to compare</p>
+              </>
             ) : (
               <img src={active.imageUrl} alt={active.title || active.category} className="max-h-[85vh] rounded-xl2 object-contain" />
             )}

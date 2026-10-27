@@ -6,7 +6,7 @@ import { toUtcDate, formatPrice } from "@/lib/utils";
 import { Hero } from "@/components/Hero";
 import { Sparkle, SparkleField } from "@/components/Sparkles";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { TiltCard } from "@/components/TiltCard";
+import { RitualCarousel } from "@/components/RitualCarousel";
 import { Magnetic } from "@/components/Magnetic";
 import { RotatingBadge } from "@/components/RotatingBadge";
 import { ReviewForm } from "@/components/ReviewForm";
@@ -66,34 +66,16 @@ export default async function HomePage() {
             </p>
           </ScrollReveal>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {categories.map((c, i) => (
-              <ScrollReveal key={c} delay={i * 0.08} className={i % 2 ? "lg:mt-16" : ""}>
-                <TiltCard className="h-[26rem]">
-                  <Link
-                    href={`/services?category=${encodeURIComponent(c)}`}
-                    className="group relative block h-full overflow-hidden rounded-[2rem] shadow-soft"
-                  >
-                    <div className="tilt-card__media absolute -inset-4">
-                      <Image src={CATEGORY_INFO[c].image} alt={c} fill sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-plum/80 via-plum/10 to-transparent" />
-                    <div className="tilt-card__glare pointer-events-none absolute inset-0" />
-                    <span className="tilt-card__content absolute left-6 top-5 font-display text-lg italic text-white/90">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="tilt-card__content absolute inset-x-0 bottom-0 p-6 text-white">
-                      <h3 className="text-4xl transition-all duration-500 group-hover:italic">{c}</h3>
-                      <p className="mt-1 text-xs text-white/80">{CATEGORY_INFO[c].blurb}</p>
-                      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/40 px-4 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors group-hover:bg-white group-hover:text-plum">
-                        Discover →
-                      </span>
-                    </div>
-                  </Link>
-                </TiltCard>
-              </ScrollReveal>
-            ))}
-          </div>
+          <ScrollReveal className="mt-10">
+            <RitualCarousel
+              items={categories.map((c) => ({
+                category: c,
+                image: CATEGORY_INFO[c].image,
+                blurb: CATEGORY_INFO[c].blurb,
+                href: `/services?category=${encodeURIComponent(c)}`,
+              }))}
+            />
+          </ScrollReveal>
         </div>
       </section>
 
@@ -175,7 +157,7 @@ export default async function HomePage() {
       <section className="py-24 md:py-32">
         <div className="container-lux grid items-center gap-16 lg:grid-cols-2">
           <ScrollReveal className="relative">
-            <div className="relative h-[480px] overflow-hidden rounded-[2.5rem] shadow-soft">
+            <div data-parallax className="relative h-[480px] overflow-hidden rounded-[2.5rem] shadow-soft">
               <Image src="/images/clinic.jpg" alt="Glow Vie treatment room" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
             </div>
             <div className="absolute -bottom-10 -right-2 rounded-full bg-bg sm:-right-10">
