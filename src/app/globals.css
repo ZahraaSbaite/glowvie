@@ -241,12 +241,25 @@ h1, h2, h3, h4 {
 /* The hero name: solid deep plum with a soft rose-gold halo that breathes. */
 .hero-name {
   color: #2a1621;
-  animation: name-halo 4s ease-in-out infinite;
+  animation: name-halo-light 4s ease-in-out infinite;
 }
 
 /* Plum would vanish on the dark theme's background, so it switches to the light ink there. */
 .dark .hero-name {
   color: rgb(var(--color-ink));
+  animation-name: name-halo;
+}
+
+/* On cream a soft halo washes out, so light mode gets a denser, wider rose-peach glow. */
+@keyframes name-halo-light {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(226, 120, 140, 1)) drop-shadow(0 0 16px rgba(226, 120, 140, 1))
+      drop-shadow(0 0 40px rgba(232, 121, 155, 0.95)) drop-shadow(0 0 80px rgba(244, 169, 138, 0.85));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(226, 120, 140, 1)) drop-shadow(0 0 24px rgba(226, 120, 140, 1))
+      drop-shadow(0 0 56px rgba(232, 121, 155, 1)) drop-shadow(0 0 110px rgba(244, 169, 138, 1));
+  }
 }
 
 @keyframes name-halo {
