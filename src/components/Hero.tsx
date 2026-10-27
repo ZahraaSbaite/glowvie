@@ -21,6 +21,10 @@ export function Hero() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Phones skip the blur: animating a blur filter on text this large can exhaust iOS
+    // Safari's graphics memory and leave the page black.
+    const isDesktop = window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches;
+
     const ctx = gsap.context(() => {
       gsap
         .timeline({ defaults: { ease: "expo.out" } })
@@ -28,7 +32,7 @@ export function Hero() {
           yPercent: 110,
           rotate: 8,
           opacity: 0,
-          filter: "blur(18px)",
+          ...(isDesktop ? { filter: "blur(18px)" } : {}),
           duration: 1.7,
           stagger: 0.08,
           clearProps: "transform,filter",
@@ -132,8 +136,9 @@ export function Hero() {
       <GlowBlobs />
       <div
         ref={spotlightRef}
-        className="pointer-events-none absolute left-1/2 top-[45%] -z-10 -ml-[17rem] -mt-[17rem] h-[34rem] w-[34rem] rounded-full opacity-70 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(244,195,168,0.85), rgba(205,182,230,0.45) 45%, transparent 70%)" }}
+        className="pointer-events-none absolute left-1/2 top-[45%] -z-10 -ml-[17rem] -mt-[17rem] h-[34rem] w-[34rem] rounded-full opacity-70"
+        // A pure gradient, no blur filter: blur on a layer this size can make iOS Safari render black.
+        style={{ background: "radial-gradient(circle, rgba(244,195,168,0.75), rgba(244,195,168,0.4) 25%, rgba(205,182,230,0.3) 45%, transparent 70%)" }}
         aria-hidden="true"
       />
 
